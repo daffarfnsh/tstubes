@@ -9,10 +9,11 @@ def read_json(filename="data.json"):
     with open(filename,"r") as read_file:
         data = json.load(read_file)
         return data
-def write_json(new_name,filename="data.json"):
+def write_json(new_name,umur,filename="data.json"):
     with open(filename,"r+") as file:
         file_data = json.load(file)
         file_data["result"]["nama"] = new_name
+        file_data["result"]["umur"] = int(umur)
         file.seek(0)
         json.dump(file_data,file,indent=4)
         file.truncate()
@@ -22,13 +23,20 @@ def index():
     data = read_json()
     return jsonify(data)
 
-@app.get("/editName")
+@app.get("/editData")
 def editName():
     name = request.args.get("name")
-    if not name:
-        return jsonify({"status":"error","deskripsi":"parameter salah atau input name kosong"
-        })
-    
-    write_json(name)
+    umur = request.args.get("umur")
+    data = read_json()
+    dUmur = data["result"]["umur"]
+    dName = data["result"]["nama"]
+    if not name and not umur:
+        return jsonify({"status":"error"})    
+    elif name and not umur:        
+        write_json(name,dUmur)
+    elif not name and umur:
+        write_json(dName,umur)
+    else:
+        write_json(name,umur)
     data = read_json()
     return jsonify(data)

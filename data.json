@@ -1,10 +1,11 @@
 {
     "result": {
-        "nama": "a",
+        "nama": "gay",
         "usia": 69,
         "tanggal-masuk": "2022-10-05T22:15:00Z",
         "diagnosis": "jantung",
         "denyut_jantung": "100",
-        "tekanan_darah": "130/82"
+        "tekanan_darah": "130/82",
+        "umur": 3
     }
 }

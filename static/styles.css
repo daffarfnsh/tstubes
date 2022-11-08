@@ -1,0 +1,26 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+.container {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+}
+.form {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+.inputClass {
+  display: flex;
+  flex-direction: column;
+}
+
+.form button {
+  margin: 0 auto;
+  height: 5vh;
+  width: 10vw;
+}

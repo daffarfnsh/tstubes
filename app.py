@@ -9,9 +9,11 @@ def index():
     """
     return render_template("index.html")
 
-@app.get("/search")
+@app.route("/search",methods=["GET","POST"])
 def search():
-    args = request.args.get("q")
+    args = request.form["q"]
+    if 'second' in request.form:
+        return redirect (f"https://google.com/search?q={args}&btnI=1")
     return redirect(f"https://google.com/search?q= {args} ")
 
 if __name__ == "__main__":

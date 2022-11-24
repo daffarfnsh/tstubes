@@ -1,28 +1,23 @@
 from flask import Flask, jsonify, request
 import json
+from flask_mysqldb import MySQL
 # Intitialise the app
 app = Flask(__name__)
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_DB'] = 'testtst'
+mysql = MySQL(app)
 
-def read_json(filename="data.json"):
-    with open(filename,"r") as read_file:
-        data = json.load(read_file)
-        return data
-def write_json(new_name,filename="data.json"):
-    with open(filename,"r+") as file:
-        file_data = json.load(file)
-        file_data["result"]["nama"] = new_name
-        file.seek(0)
-        json.dump(file_data,file,indent=4)
-        file.truncate()
+
+# print(data)
+
+
 # Define what the app does
 @app.get("/")
 def index():
-    data = read_json()
-    return jsonify(data)
-
-@app.get("/editName")
-def editName():
-    name = request.args.get("name")
-    write_json(name)
-    data = read_json()
+    cur = mysql.connection.cursor()
+    table = 'estimated_crimes_1979_2019'
+    cur.execute(f'''select * from {table} limit 5''')
+    data = cur.fetchall()
     return jsonify(data)

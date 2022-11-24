@@ -45,27 +45,26 @@ def create():
         return 'success'
 
     return render_template('create.html')
-@app.route('/update',methods=['GET','POST'])
+@app.route('/update',methods=['GET','POST','PUT'])
 def update():
     cur = mysql.connection.cursor()
-    if request.method == 'POST':
-        form = request.form
-        year = form['year']
-        stateAbbr = form['state_abbr']
-        stateName = form['state_name']
+    if request.method == 'PUT':
+        payload = request.get_json()
+        year = payload['year']
+        stateAbbr = payload['state_abbr']
+        stateName = payload['state_name']
         query = f'update {table} set state_name = "{stateName}" where year = {year} and state_abbr ="{stateAbbr}"'
         cur.execute(query)
         print(query)
         mysql.connection.commit()
     return render_template('update.html')
-@app.route('/delete',methods=['GET','POST'])
+@app.route('/delete',methods=['GET','POST','DELETE'])
 def delete():
     cur = mysql.connection.cursor()
-    if request.method == 'POST':
-        form = request.form
-        year = form['year']
+    if request.method == 'DELETE':
+        payload = request.get_json()
+        year = payload['year']
         query = f'delete from {table} where year = {year}'
         cur.execute(query)
-        print(query)
         mysql.connection.commit()
     return render_template('delete.html')

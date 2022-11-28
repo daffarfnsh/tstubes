@@ -4,6 +4,7 @@ import jwt # Perlu install pip3 install PyJWT diawal
 import datetime
 from functools import wraps
 from flask_mysqldb import MySQL
+from user import *
 # Intitialise the app
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'localhost'
@@ -34,18 +35,19 @@ def login():
     if request.method == 'POST':
         form = request.form
         username = form['username']
-        token = jwt.encode({'user':username, 'exp':datetime.datetime.utcnow()+datetime.timedelta(seconds=10)},app.config['SECRET_KEY'])
-        storage.append(token)
-        return render_template('login.html',token=token)
+        password = form['password']
+        if checkValidation(username,password):
+            token = jwt.encode({'user':username, 'exp':datetime.datetime.utcnow()+datetime.timedelta(seconds=10)},app.config['SECRET_KEY'])
+            storage.append(token)
+            return render_template('login.html',token=token)
+        else:
+            return('Password atau username salah')
     return render_template('login.html')
 
 # Define what the app does
 @app.route("/",methods=['GET','POST'])
 def index():
     cur = mysql.connection.cursor()
-    data = jwt.decode(storage[0],app.config['SECRET_KEY'],algorithms=['HS256'])
-    print(f'data: {data}')
-    print(storage)
     if request.method == 'POST':
         form = request.form
         year = form['year']

@@ -4,6 +4,7 @@ import jwt # Perlu install pip3 install PyJWT diawal
 import datetime
 from functools import wraps
 from flask_mysqldb import MySQL
+from flask_mail import Mail,Message #pip install Flask-Mail
 from user import *
 # Intitialise the app
 app = Flask(__name__)
@@ -11,8 +12,12 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'testtst'
+
 mysql = MySQL(app)
 table = 'estimated_crimes_1979_2019'
+
+app.config.from_pyfile('config.cfg')
+mail = Mail(app)
 
 app.config['SECRET_KEY'] ='needbucin'
 storage = []
@@ -102,3 +107,13 @@ def delete():
         cur.execute(query)
         mysql.connection.commit()
     return render_template('delete.html')
+
+# Test Email
+# https://stackoverflow.com/questions/72547853/unable-to-send-email-in-c-sharp-less-secure-app-access-not-longer-available/72553362#72553362
+@app.route('/email',methods=['GET'])
+def sendEmail():
+    email = "xaseya7231@xegge.com"
+    msg = Message('Confirm Email',sender='noreply@demo.com',recipients=[email])
+    msg.body = 'Test msg'
+    mail.send(msg)
+    return 'Sent'

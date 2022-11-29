@@ -12,21 +12,17 @@
       <table class="table">
         <thead>
           <tr>
-            <th>year</th>
-            <th>state_abbr</th>
-            <th>state_name</th>
-            <th>population</th>
-            <th>violent_crime</th>
-            <th>homicide</th>
-            <th>rape_legacy</th>
-            <th>rape_revised</th>
-            <th>robbery</th>
-            <th>aggravated_assault</th>
-            <th>property_crime</th>
-            <th>burglary</th>
-            <th>larceny</th>
-            <th>motor_vehicle_thef</th>
-            <th>caveats</th>
+            <th>index</th>
+            <th>category</th>
+            <th>linkedin</th>
+            <th>profile_picture</th>
+            <th>description</th>
+            <th>Experience</th>
+            <th>Name</th>
+            <th>position</th>
+            <th>location</th>
+            <th>skills</th>
+            <th>clean_skills</th>
           </tr>
         </thead>
         <tbody>
@@ -44,9 +40,6 @@
             <td>{{ d[9] }}</td>
             <td>{{ d[10] }}</td>
             <td>{{ d[11] }}</td>
-            <td>{{ d[12] }}</td>
-            <td>{{ d[13] }}</td>
-            <td>{{ d[14] }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -56,7 +49,7 @@
       <form method="POST">
         <div class="container-input">
           <label>Year:</label>
-          <input type="text" name="year" id="" />
+          <input type="text" name="index" id="" />
         </div>
         <button>Submit</button>
       </form>

@@ -1,20 +1,21 @@
-from flask import Flask, jsonify, request, render_template, make_response, url_for,redirect
+from flask import Flask, jsonify, request, render_template
 import json
 import jwt # Perlu install pip3 install PyJWT diawal
 import datetime
 from functools import wraps
 from flask_mysqldb import MySQL
-from user import *
+from datauser import *
+
 # Intitialise the app
 app = Flask(__name__)
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'testtst'
+app.config['MYSQL_DB'] = 'testst'
 mysql = MySQL(app)
-table = 'estimated_crimes_1979_2019'
+table = 'linkedin'
 
-app.config['SECRET_KEY'] ='needbucin'
+app.config['SECRET_KEY'] ='dvp'
 storage = []
 # Token Required
 def token_required(f):
@@ -46,59 +47,38 @@ def login():
 
 # Define what the app does
 @app.route("/",methods=['GET','POST'])
+@token_required
 def index():
     cur = mysql.connection.cursor()
-    if request.method == 'POST':
-        form = request.form
-        year = form['year']
-        if not year:
-            cur.execute(f'''select * from {table} limit 10''')
-            data = cur.fetchall()
-            return render_template('index.html',data = data)
-        cur.execute(f'select * from {table} where year = {year} limit 10')
-        data = cur.fetchall()
-        return render_template('index.html',data = data)
-    cur.execute(f'''select * from {table} limit 10''')
+    # query = f'select * from {table} limit 3'
+    profile_picture = 'Dummy1'
+    query = f'select * from {table} limit 1'
+    cur.execute(query)
     data = cur.fetchall()
-    print(f'storage: {storage}')
-    return render_template('index.html',data = data)
+    return jsonify(data)
 
 @app.route("/create",methods=['GET','POST'])
-@token_required
 def create():
     cur = mysql.connection.cursor()
-    if request.method == 'POST':
-        form = request.form
-        year = form['year']
-        stateAbbr = form['state_abbr']
-        stateName = form['state_name']
-        query = f'insert into {table} (year,state_abbr,state_name) values ({year},"{stateAbbr}","{stateName}")'
-        cur.execute(query)
-        print(query)
-        mysql.connection.commit()
-        return 'success'
-
-    return render_template('create.html')
+    query = f'insert into {table} values (2022,"CS","in.linkedin","Dummy","Dummy","Dummy","Dummy","Dummy","Dummy","Dummy","Dummy")'
+    cur.execute(query)
+    mysql.connection.commit()
+    return 'data created'
 @app.route('/update',methods=['GET','POST','PUT'])
 def update():
     cur = mysql.connection.cursor()
-    if request.method == 'PUT':
-        payload = request.get_json()
-        year = payload['year']
-        stateAbbr = payload['state_abbr']
-        stateName = payload['state_name']
-        query = f'update {table} set state_name = "{stateName}" where year = {year} and state_abbr ="{stateAbbr}"'
-        cur.execute(query)
-        print(query)
-        mysql.connection.commit()
-    return render_template('update.html')
+    category = 'CS'
+    linkedin = 'in.linkedin'
+    profile_picture = 'Dummy1'
+    query = f'update {table} set profile_picture = "{profile_picture}" where linkedin ="{linkedin}"'
+    cur.execute(query)
+    mysql.connection.commit()
+    return 'data updated'
 @app.route('/delete',methods=['GET','POST','DELETE'])
 def delete():
     cur = mysql.connection.cursor()
-    if request.method == 'DELETE':
-        payload = request.get_json()
-        year = payload['year']
-        query = f'delete from {table} where year = {year}'
-        cur.execute(query)
-        mysql.connection.commit()
-    return render_template('delete.html')
+    profile_picture = 'Dummy1'
+    query = f'delete from {table} where profile_picture = "{profile_picture}"'
+    cur.execute(query)
+    mysql.connection.commit()
+    return 'data deleted'

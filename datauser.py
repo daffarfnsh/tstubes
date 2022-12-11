@@ -1,12 +1,9 @@
 user = {
-    'aufa':'yepyepyep',
-    'rakha':'hedon',
-    'kafi':'player',
-    'dafeb':'dafap',
-    'dito':'meong'
+    'user1':'asdf',
+    'dafeb':'dfa123'
 }
 
-def checkValidation(username,password):
+def validateUser(username,password):
     try:
         pw = user[username]
         if pw == password:

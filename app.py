@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, render_template
 import json
-import jwt # Perlu install pip3 install PyJWT diawal
+import jwt
 import datetime
 from functools import wraps
 from flask_mysqldb import MySQL
@@ -16,17 +16,17 @@ mysql = MySQL(app)
 table = 'linkedin'
 
 app.config['SECRET_KEY'] ='dvp'
-storage = []
+tmp = []
 # Token Required
-def token_required(f):
+def check_token(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if len(storage) == 0:
+        if len(tmp) == 0:
             return jsonify({'message':'Tokekn is missing'}),403
         try:
-            data = jwt.decode(storage[0],app.config['SECRET_KEY'],algorithms=['HS256'])
+            data = jwt.decode(tmp[0],app.config['SECRET_KEY'],algorithms=['HS256'])
         except:
-            return jsonify({'message':'Token is invalid'}),403
+            return jsonify({'message':'Token is invalid or expired'}),403
         return f(*args,**kwargs)
     return decorated
     
@@ -37,9 +37,9 @@ def login():
         form = request.form
         username = form['username']
         password = form['password']
-        if checkValidation(username,password):
-            token = jwt.encode({'user':username, 'exp':datetime.datetime.utcnow()+datetime.timedelta(seconds=10)},app.config['SECRET_KEY'])
-            storage.append(token)
+        if validateUser(username,password):
+            token = jwt.encode({'user':username, 'exp':datetime.datetime.utcnow()+datetime.timedelta(seconds=20)},app.config['SECRET_KEY'])
+            tmp.append(token)
             return render_template('login.html',token=token)
         else:
             return('Password atau username salah')
@@ -47,12 +47,12 @@ def login():
 
 # Define what the app does
 @app.route("/",methods=['GET','POST'])
-@token_required
+@check_token
 def index():
     cur = mysql.connection.cursor()
     # query = f'select * from {table} limit 3'
-    profile_picture = 'Dummy1'
-    query = f'select * from {table} limit 1'
+    #profile_picture = 'Dummy1'
+    query = f'select * from {table} limit 3'
     cur.execute(query)
     data = cur.fetchall()
     return jsonify(data)

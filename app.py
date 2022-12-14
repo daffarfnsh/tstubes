@@ -4,17 +4,25 @@ import jwt
 import datetime
 import random
 from functools import wraps
-from flask_mysqldb import MySQL
+from flaskext.mysql import MySQL
 from flask_mail import Mail,Message
 from datauser import *
 
 # Intitialise the app
 app = Flask(__name__)
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'testst'
-mysql = MySQL(app)
+# app.config['MYSQL_HOST'] = 'localhost'
+# app.config['MYSQL_USER'] = 'root'
+# app.config['MYSQL_PASSWORD'] = ''
+# app.config['MYSQL_DB'] = 'testst'
+# mysql = MySQL(app)
+# table = 'linkedin'
+
+mysql = MySQL()
+app.config['JSON_SORT_KEYS'] = False
+app.config['MYSQL_USER'] = 'wipeeebm_dapep'
+app.config['MYSQL_PASSWORD'] = 'Miscrit10'
+app.config['MYSQL_DB'] = 'wipeeebm_LinkedIn'
+app.config['MYSQL_HOST'] = '103.163.138.244'
 table = 'linkedin'
 
 app.config.from_pyfile('config.cfg')
@@ -33,11 +41,11 @@ def check_token(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if len(tmp) == 0:
-            return jsonify({'message':'Token is missing'}),403
+            return jsonify({'message':'Token is missing. Please redirect to /login or /email for authentication'}),403
         try:
             data = jwt.decode(tmp[0],app.config['SECRET_KEY'],algorithms=['HS256'])
         except:
-            return jsonify({'message':'Token is invalid or expired'}),403
+            return jsonify({'message':'Token is invalid or expired. Please redirect to /login or /email for authentication'}),403
         return f(*args,**kwargs)
     return decorated
 
@@ -64,18 +72,23 @@ def login():
     return render_template('login.html')
 
 # Define what the app does
-@app.route("/",methods=['GET','POST'])
+@app.route('/')
+def index():
+    data = {"msg":"Selamat datang di service Pengelolaan Data LinkedIn"}
+    return jsonify(data)
+
+@app.route("/create",methods=['GET','POST'])
 @check_token
 def index():
     cur = mysql.connection.cursor()
-    # query = f'select * from {table} limit 3'
-    #profile_picture = 'Dummy1'
-    query = f'select * from {table} limit 3'
+    query = f'select Name, category, clean_skills from {table} limit 5'
     cur.execute(query)
     data = cur.fetchall()
     return jsonify(data)
 
+# Unimportant
 @app.route("/create",methods=['GET','POST'])
+@check_token
 def create():
     cur = mysql.connection.cursor()
     query = f'insert into {table} values (2022,"CS","in.linkedin","Dummy","Dummy","Dummy","Dummy","Dummy","Dummy","Dummy","Dummy")'
@@ -83,6 +96,7 @@ def create():
     mysql.connection.commit()
     return 'data created'
 @app.route('/update',methods=['GET','POST','PUT'])
+@check_token
 def update():
     cur = mysql.connection.cursor()
     category = 'CS'
@@ -93,6 +107,7 @@ def update():
     mysql.connection.commit()
     return 'data updated'
 @app.route('/delete',methods=['GET','POST','DELETE'])
+@check_token
 def delete():
     cur = mysql.connection.cursor()
     profile_picture = 'Dummy1'
